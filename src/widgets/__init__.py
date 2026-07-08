@@ -1,2 +1,3 @@
 from .tabs import *
-from .kuznya import *
+from .settings import SettingsContainer
+from .scripts import ScriptsContainer

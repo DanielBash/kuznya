@@ -4,6 +4,7 @@
 
 # -- импорт библиотек
 import pathlib
+import random
 from pathlib import Path
 import gzip
 import json
@@ -51,9 +52,9 @@ class ScriptFile:
         if identity is None:
             identity = secrets.token_urlsafe(16)
         if code is None:
-            code = f'# This is script with identity {identity}'
+            code = f'# Скрипт с идентификатором {identity}'
         if name is None:
-            name = f'Script with identity {identity[:4]}...'
+            name = f'Скрипт {identity[:4]}...'
 
         self.code = code
         self.name = name
@@ -132,3 +133,13 @@ class WorldFile:
 
         with gzip.open(filename, 'wt', encoding='UTF-8', compresslevel=9) as file:
             json.dump(self._data, file)
+
+    # - quick macros
+    def do_new_script(self):
+        self.scripts.append(ScriptFile())
+
+    def do_delete_script(self, identity):
+        for script_indx in range(len(self.scripts)):
+            if self.scripts[script_indx].identity == identity:
+                del self.scripts[script_indx]
+                break

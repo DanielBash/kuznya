@@ -1,16 +1,19 @@
 """
 Объявление специфичных для приложения виджетов и контейнеров.
+Объявление окна настроек.
 """
 
 # -- импортирование модулей
+# - глобальные
 from prompt_toolkit.layout import HSplit, Dimension, WindowAlign
-from prompt_toolkit.validation import Validator, ValidationError
 from prompt_toolkit.widgets import Frame, TextArea, Box, Button, Label
 
+# - локальные
 import settings
 
 
-# -- объявление элементов
+# -- объявление виджетов
+# - настройки
 class SettingsContainer:
     def __init__(self):
         self.telnet_area = TextArea(

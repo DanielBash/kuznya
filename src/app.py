@@ -15,7 +15,7 @@ from easy_gui_prompt import EasyGUI
 
 # - локальные модули
 from keybindings import kb
-from widgets import TabContainer, Tab, SettingsContainer
+from widgets import TabContainer, Tab, SettingsContainer, ScriptsContainer
 
 
 # -- создание виджета приложения
@@ -53,7 +53,7 @@ class KuznyaApp:
         pass
 
     def do_scripts_tab(self):
-        pass
+        self.tab_container.tabs.append(Tab(ScriptsContainer(), title='Скрипты'))
 
     def do_objects_tab(self):
         pass
