@@ -57,17 +57,16 @@ class ScriptsContainer:
                     HSplit([
                         *self.buttons,
                         self.new_script_button,
-                    ]),
+                    ], style='bg:#000000'),
                     height=10,
-
-                ), title='Скрипты')
+                ), title='Скрипты', style='bg:#000000')
         else:
             self.frame = Frame(
                 HSplit([
                     Label('В данном мире еще нет скриптов', align=WindowAlign.CENTER),
                     self.new_script_button,
                 ]),
-                title='Скрипты')
+                title='Скрипты', style='bg:#000000')
 
         self.container = Box(self.frame, height=Dimension())
 

@@ -17,7 +17,7 @@ from easy_gui_prompt import EasyGUI
 # - локальные модули
 from keybindings import kb
 from widgets import TabContainer, Tab, ServerContainer, ScriptsContainer, ScriptInspectorContainer, \
-    ScriptCodeInspectorContainer
+    ScriptCodeInspectorContainer, ObjectInspectorContainer
 from widgets.objects import ObjectsContainer
 
 
@@ -80,6 +80,11 @@ class KuznyaApp:
     # - открытие вкладки списка объектов
     def do_objects_tab(self):
         self.tab_container.tabs.append(Tab(ObjectsContainer(), title='Объекты'))
+        self.focus_last_tab()
+
+    # - открытие вкладки редактора объекта
+    def do_object_inspector_tab(self, object_identity):
+        self.tab_container.tabs.append(Tab(ObjectInspectorContainer(object_identity), title=f'Объект {object_identity[:5]}'))
         self.focus_last_tab()
 
     # - открытие вкладки настроек

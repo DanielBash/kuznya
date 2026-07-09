@@ -29,6 +29,11 @@ STYLE = Style([
     ('text-area', 'bg:#000000 fg:#00ff00'),
     ('button', 'bg:#000000 fg:#00ff00'),
     ('label', 'bg:#000000 fg:#00ff00'),
+    ('dialog', 'bg:#000000'),
+    ('dialog frame.label', 'fg:#00ff00 bg:#000000 bold'),
+    ('dialog body', 'fg:#00cc00 bg:#000000'),
+    ('dialog input', 'fg:#00ff00 bg:#000000'),
+    ('dialog input cursor', 'bg:#00ff00 fg:#000000')
 ])
 MOUSE_SUPPORT = True
 FULLSCREEN = True

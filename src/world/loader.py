@@ -53,7 +53,10 @@ class ObjectFile:
 
     def get_name(self):
         if 'name' in self.attributes:
-            return self.attributes['name']
+            try:
+                return str(self.attributes['name'])
+            except Exception as e:
+                return self.identity
         else:
             return self.identity
 
@@ -164,3 +167,24 @@ class WorldFile:
         for script in self.scripts:
             if script.identity == identity:
                 return script
+
+    def do_get_object_by_identity(self, identity):
+        return self.find_in_children(self.root_object, identity)
+
+    def find_in_children(self, object, target_identity):
+        if object.identity == target_identity:
+            return object
+        else:
+            for child in object.children:
+                if self.find_in_children(child, target_identity):
+                    return child
+        return None
+
+    def get_objects_from_root(self, object):
+        found = [object]
+        for child in object.children:
+            found += self.get_objects_from_root(child)
+        return found
+
+    def get_objects(self):
+        return self.get_objects_from_root(self.root_object)

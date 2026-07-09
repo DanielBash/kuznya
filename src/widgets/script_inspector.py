@@ -27,12 +27,12 @@ class ScriptInspectorContainer:
         )
         self.edit_button = Button(
             text='Редактор',
-            width=34,
+            width=70,
             handler=self.on_edit
         )
         self.submit_button = Button(
             text='Подтвердить',
-            width=34,
+            width=70,
             handler=self.on_submit
         )
         self.frame = Frame(
@@ -41,7 +41,7 @@ class ScriptInspectorContainer:
                 self.edit_button,
                 self.submit_button,
             ]),
-            title=f'{self.script.name[:24]}')
+            title=f'{self.script.name}')
         self.container = Box(self.frame, height=Dimension())
 
     def __pt_container__(self):
@@ -51,13 +51,13 @@ class ScriptInspectorContainer:
         try:
             script_name = self.name_area.text
 
-            if len(script_name) > 19 or len(script_name) < 3: raise Exception
+            if len(script_name) > 50 or len(script_name) < 3: raise Exception
 
             self.script.name = script_name
 
-            self.frame.title = f'{self.script.name[:19]} (Изменено)'
+            self.frame.title = f'{self.script.name} (Изменено)'
         except Exception:
-            self.frame.title = f'{self.script.name[:19]} (Ошибка)'
+            self.frame.title = f'{self.script.name} (Ошибка)'
             self.on_update()
 
     def on_edit(self):

@@ -2,13 +2,14 @@
 Объявление специфичных для приложения виджетов и контейнеров.
 Объявление вкладки просмотра дерева объектов.
 """
-from prompt_toolkit.key_binding import KeyBindings
+
 # -- импорт модулей
 # - глобальные
 from prompt_toolkit.layout import Window, ScrollablePane, FormattedTextControl, ScrollOffsets
 from prompt_toolkit.widgets import Frame, Box
 from prompt_toolkit.mouse_events import MouseEvent, MouseEventType
 from prompt_toolkit.formatted_text import FormattedText
+from prompt_toolkit.key_binding import KeyBindings
 
 # - локальные
 import settings
@@ -111,7 +112,7 @@ class ObjectsContainer:
         def handler(mouse_event: MouseEvent):
             if mouse_event.event_type == MouseEventType.MOUSE_UP:
                 self.control.text = self.render()
-
+                settings.app_state.app.do_object_inspector_tab(object.identity)
         return handler
 
     def _make_add_child_handler(self, object):
@@ -130,6 +131,9 @@ class ObjectsContainer:
                 self.control.text = self.render()
 
         return handler
+
+    def on_update(self):
+        self.control.text = self.render()
 
     def __pt_container__(self):
         return self.container
