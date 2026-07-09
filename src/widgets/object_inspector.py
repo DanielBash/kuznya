@@ -128,7 +128,7 @@ class ObjectInspectorContainer:
                 *attributes_ui,
                 Label(text='Имя атрибута:', align=WindowAlign.LEFT),
                 self.attribute_name_area,
-                Label(text='Значение (Python код):', align=WindowAlign.LEFT),
+                Label(text='Значение:', align=WindowAlign.LEFT),
                 self.attribute_area,
                 self.button_add_attribute,
             ]),

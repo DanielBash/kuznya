@@ -171,13 +171,13 @@ class WorldFile:
     def do_get_object_by_identity(self, identity):
         return self.find_in_children(self.root_object, identity)
 
-    def find_in_children(self, object, target_identity):
-        if object.identity == target_identity:
-            return object
-        else:
-            for child in object.children:
-                if self.find_in_children(child, target_identity):
-                    return child
+    def find_in_children(self, obj, target_identity):
+        if obj.identity == target_identity:
+            return obj
+        for child in obj.children:
+            found = self.find_in_children(child, target_identity)
+            if found is not None:
+                return found
         return None
 
     def get_objects_from_root(self, object):
