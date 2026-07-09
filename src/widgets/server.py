@@ -14,7 +14,7 @@ import settings
 
 # -- объявление виджетов
 # - настройки
-class SettingsContainer:
+class ServerContainer:
     def __init__(self):
         self.telnet_area = TextArea(
             text=str(settings.app_state.world.port_telnet),
@@ -47,14 +47,14 @@ class SettingsContainer:
                 Frame(body=self.web_area, title="Порт web", height=3),
                 self.submit_button,
             ]),
-            title='Настройки')
+            title='Сервер')
         self.container = Box(self.frame, height=Dimension())
 
     def __pt_container__(self):
         return self.container
 
     def on_submit(self):
-        self.frame.title = 'Настройки'
+        self.frame.title = 'Сервер'
 
         try:
             telnet_port = int(self.telnet_area.text)
@@ -69,7 +69,12 @@ class SettingsContainer:
             settings.app_state.world.port_ssh = ssh_port
             settings.app_state.world.port_web = web_port
 
-            self.frame.title = f'Настройки (Сохранено)'
+            self.frame.title = f'Сервер (Сохранено)'
 
         except Exception:
-            self.frame.title = 'Настройки (Ошибка)'
+            self.frame.title = 'Сервер (Ошибка)'
+
+    def on_update(self):
+        self.telnet_area.text = str(settings.app_state.world.port_telnet)
+        self.ssh_area.text = str(settings.app_state.world.port_ssh)
+        self.web_area.text = str(settings.app_state.world.port_web)

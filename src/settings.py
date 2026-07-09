@@ -32,12 +32,12 @@ STYLE = Style([
 ])
 MOUSE_SUPPORT = True
 FULLSCREEN = True
-MIN_REDRAW_INTERVAL = 0.066
 
 
 # -- состояние приложения
 class AppState:
     def __init__(self):
         self.world = WorldFile()
+        self.app = None
 
 app_state = AppState()

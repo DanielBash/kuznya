@@ -13,7 +13,7 @@ import secrets
 
 # -- объявление классов
 class ObjectFile:
-    def __init__(self, identity = None, scripts = None, children = None):
+    def __init__(self, identity=None, scripts=None, children=None):
         if identity is None:
             identity = secrets.token_urlsafe(16)
         if scripts is None:
@@ -41,6 +41,22 @@ class ObjectFile:
         self.attributes = saved['attributes']
         return self
 
+    # - быстрые макросы
+    def add_child(self):
+        self.children.append(ObjectFile())
+
+    def delete_child(self, identity):
+        for child_indx in range(len(self.children)):
+            if self.children[child_indx].identity == identity:
+                del self.children[child_indx]
+                return
+
+    def get_name(self):
+        if 'name' in self.attributes:
+            return self.attributes['name']
+        else:
+            return self.identity
+
 
 class PrefabFile(ObjectFile):
     def __init__(self):
@@ -48,11 +64,11 @@ class PrefabFile(ObjectFile):
 
 
 class ScriptFile:
-    def __init__(self, code = None, name = None, identity = None):
+    def __init__(self, code=None, name=None, identity=None):
         if identity is None:
             identity = secrets.token_urlsafe(16)
         if code is None:
-            code = f'# Скрипт с идентификатором {identity}'
+            code = f'# Скрипт с идентификатором {identity} \n'
         if name is None:
             name = f'Скрипт {identity[:4]}...'
 
@@ -89,7 +105,7 @@ class WorldFile:
 
         self.load_new()
 
-    # - loading functions
+    # - функции загрузки
     def load_filename(self, filename: Path):
         self.filename = filename
 
@@ -118,7 +134,7 @@ class WorldFile:
 
         return self
 
-    # - saving functions
+    # - функции сохранения
     def save_filename(self, filename: Path):
         self._data = {
             'root': self.root_object.save(),
@@ -134,7 +150,7 @@ class WorldFile:
         with gzip.open(filename, 'wt', encoding='UTF-8', compresslevel=9) as file:
             json.dump(self._data, file)
 
-    # - quick macros
+    # - быстрые макросы
     def do_new_script(self):
         self.scripts.append(ScriptFile())
 
@@ -143,3 +159,8 @@ class WorldFile:
             if self.scripts[script_indx].identity == identity:
                 del self.scripts[script_indx]
                 break
+
+    def do_get_script_by_identity(self, identity):
+        for script in self.scripts:
+            if script.identity == identity:
+                return script

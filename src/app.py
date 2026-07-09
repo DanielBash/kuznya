@@ -1,10 +1,11 @@
 """
 Приложение Кузня. Создание приложения prompt_toolkit.
 """
+from pathlib import Path
 
 # -- импорт модулей
 # - глобальные модули
-from prompt_toolkit.application import Application
+from prompt_toolkit.application import Application, get_app
 from prompt_toolkit.layout import Layout
 from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.widgets import MenuContainer, MenuItem, TextArea
@@ -15,7 +16,9 @@ from easy_gui_prompt import EasyGUI
 
 # - локальные модули
 from keybindings import kb
-from widgets import TabContainer, Tab, SettingsContainer, ScriptsContainer
+from widgets import TabContainer, Tab, ServerContainer, ScriptsContainer, ScriptInspectorContainer, \
+    ScriptCodeInspectorContainer
+from widgets.objects import ObjectsContainer
 
 
 # -- создание виджета приложения
@@ -26,6 +29,8 @@ class KuznyaApp:
 
         self.construct()
 
+        app_state.app = self
+
     def construct(self):
         self.tab_container = TabContainer(tabs=[])
 
@@ -35,31 +40,55 @@ class KuznyaApp:
                 MenuItem(
                     "Вкладки",
                     children=[
-                        MenuItem("Мир", handler=self.do_project_tab),
+                        MenuItem("Запуск", handler=self.do_launch_tab),
                         MenuItem("Шаблоны", handler=self.do_prefabs_tab),
                         MenuItem("Скрипты", handler=self.do_scripts_tab),
                         MenuItem("Объекты", handler=self.do_objects_tab),
-                        MenuItem("Настройки", handler=self.do_settings_tab),
+                        MenuItem("Сервер", handler=self.do_settings_tab),
                     ]
                 )
             ],
         )
 
     # -- функции меню
-    def do_project_tab(self):
+    # - открытие вкладки мира
+    def do_launch_tab(self):
         pass
 
+    # - открытие вкладки шаблонов
     def do_prefabs_tab(self):
         pass
 
+    # - открытие вкладки скриптов
     def do_scripts_tab(self):
         self.tab_container.tabs.append(Tab(ScriptsContainer(), title='Скрипты'))
+        self.focus_last_tab()
 
+    # - открытие вкладки инспектора скрипта
+    def do_script_inspector_tab(self, identity):
+        script = app_state.world.do_get_script_by_identity(identity)
+        self.tab_container.tabs.append(Tab(ScriptInspectorContainer(identity), title=f'Скрипт: {script.identity[:5]}'))
+        self.focus_last_tab()
+
+    # - открытие вкладки инспектора скрипта
+    def do_script_code_inspector_tab(self, identity):
+        script = app_state.world.do_get_script_by_identity(identity)
+        self.tab_container.tabs.append(
+            Tab(ScriptCodeInspectorContainer(identity), title=f'Код Скрипта: {script.identity[:5]}'))
+        self.focus_last_tab()
+
+    # - открытие вкладки списка объектов
     def do_objects_tab(self):
-        pass
+        self.tab_container.tabs.append(Tab(ObjectsContainer(), title='Объекты'))
+        self.focus_last_tab()
 
+    # - открытие вкладки настроек
     def do_settings_tab(self):
-        self.tab_container.tabs.append(Tab(SettingsContainer(), title='Настройки'))
+        self.tab_container.tabs.append(Tab(ServerContainer(), title='Сервер'))
+        self.focus_last_tab()
+
+    def focus_last_tab(self):
+        self.tab_container.switch_tab(len(self.tab_container.tabs) - 1)
 
     def __pt_container__(self):
         return self.root_container
@@ -73,5 +102,4 @@ app = Application(
     mouse_support=MOUSE_SUPPORT,
     key_bindings=kb,
     style=STYLE,
-    min_redraw_interval=MIN_REDRAW_INTERVAL,
 )

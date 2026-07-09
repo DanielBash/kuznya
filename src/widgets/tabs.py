@@ -8,14 +8,16 @@ from prompt_toolkit.layout import HSplit, Window, DynamicContainer, WindowAlign
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.mouse_events import MouseEventType
 from prompt_toolkit.application.current import get_app
+from prompt_toolkit.widgets import Box
 
 
 def message_container(text: str):
-    return Window(
+    return Box(Window(
         FormattedTextControl(text),
         style="fg:#00ff00 bold",
         align=WindowAlign.CENTER,
-    )
+        height=1,
+    ))
 
 
 class TabContainer:
@@ -79,7 +81,7 @@ class TabContainer:
             ))
 
         if not self.tabs:
-            result.append(('', ' [Нет вкладок] '))
+            result.append(('', ' Нет вкладок '))
 
         return result
 
@@ -118,6 +120,7 @@ class TabContainer:
         if 0 <= tab_index < len(self.tabs):
             self.active_tab = tab_index
             get_app().layout.focus(self.content_container)
+            self.tabs[tab_index].on_update()
         else:
             self.active_tab = 0
             get_app().layout.focus(self.bar)
@@ -141,6 +144,10 @@ class Tab:
     def __init__(self, container, title):
         self.container = container
         self.title = title
+
+    def on_update(self):
+        if hasattr(self.container, 'on_update'):
+            self.container.on_update()
 
     def __pt_container__(self):
         return self.container
