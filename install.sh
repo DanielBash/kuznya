@@ -9,6 +9,7 @@ NC='\033[0m' # No Color
 
 # Пути установки
 INSTALL_DIR="$HOME/.local/share/kuznya"
+VENV_DIR="$INSTALL_DIR/.venv"
 BIN_DIR="$HOME/.local/bin"
 DESKTOP_DIR="$HOME/.local/share/applications"
 REPO_URL="https://github.com/DanielBash/kuznya.git"
@@ -18,19 +19,11 @@ echo -e "${BLUE}  Установка КУЗНЯ RPG Engine${NC}"
 echo -e "${BLUE}================================${NC}\n"
 
 # Проверка зависимостей
-echo -e "${YELLOW}[1/6] Проверка зависимостей...${NC}"
+echo -e "${YELLOW}[1/7] Проверка системных зависимостей...${NC}"
 
 command -v python3 >/dev/null 2>&1 || {
     echo -e "${RED}❌ Python3 не установлен. Установите python3${NC}"
     exit 1
-}
-
-command -v pip3 >/dev/null 2>&1 || {
-    echo -e "${YELLOW}⚠️  pip3 не найден, пытаюсь установить...${NC}"
-    python3 -m ensurepip --upgrade 2>/dev/null || {
-        echo -e "${RED}❌ Не удалось установить pip${NC}"
-        exit 1
-    }
 }
 
 command -v git >/dev/null 2>&1 || {
@@ -38,17 +31,23 @@ command -v git >/dev/null 2>&1 || {
     exit 1
 }
 
-echo -e "${GREEN}✓ Зависимости найдены${NC}"
+# Проверка наличия модуля venv
+python3 -c "import venv" 2>/dev/null || {
+    echo -e "${RED}❌ Модуль python3-venv не установлен. Установите: sudo apt install python3-venv${NC}"
+    exit 1
+}
+
+echo -e "${GREEN}✓ Системные зависимости найдены${NC}"
 
 # Создание директорий
-echo -e "\n${YELLOW}[2/6] Создание директорий...${NC}"
+echo -e "\n${YELLOW}[2/7] Создание директорий...${NC}"
 mkdir -p "$INSTALL_DIR"
 mkdir -p "$BIN_DIR"
 mkdir -p "$DESKTOP_DIR"
 echo -e "${GREEN}✓ Директории созданы${NC}"
 
 # Клонирование репозитория
-echo -e "\n${YELLOW}[3/6] Клонирование репозитория...${NC}"
+echo -e "\n${YELLOW}[3/7] Клонирование репозитория...${NC}"
 if [ -d "$INSTALL_DIR/.git" ]; then
     echo -e "${YELLOW}⚠️  Репозиторий уже существует, обновляю...${NC}"
     cd "$INSTALL_DIR" && git pull origin main
@@ -57,26 +56,47 @@ else
 fi
 echo -e "${GREEN}✓ Репозиторий клонирован${NC}"
 
-# Установка Python-зависимостей
-echo -e "\n${YELLOW}[4/6] Установка Python-зависимостей...${NC}"
+# Создание виртуального окружения
+echo -e "\n${YELLOW}[4/7] Создание виртуального окружения Python...${NC}"
+if [ ! -d "$VENV_DIR" ]; then
+    python3 -m venv "$VENV_DIR"
+    echo -e "${GREEN}✓ Виртуальное окружение создано${NC}"
+else
+    echo -e "${YELLOW}⚠️  Виртуальное окружение уже существует${NC}"
+fi
+
+# Активация venv и установка зависимостей
+echo -e "\n${YELLOW}[5/7] Установка Python-зависимостей в venv...${NC}"
+source "$VENV_DIR/bin/activate"
+pip install --upgrade pip > /dev/null 2>&1
 cd "$INSTALL_DIR"
-pip3 install -r requirements.txt --user
-echo -e "${GREEN}✓ Зависимости установлены${NC}"
+pip install -r requirements.txt
+deactivate
+echo -e "${GREEN}✓ Зависимости установлены в виртуальное окружение${NC}"
 
 # Создание исполняемого скрипта в PATH
-echo -e "\n${YELLOW}[5/6] Создание команды kuznya...${NC}"
+echo -e "\n${YELLOW}[6/7] Создание команды kuznya...${NC}"
 cat > "$BIN_DIR/kuznya" << 'EOF'
 #!/bin/bash
 
 INSTALL_DIR="$HOME/.local/share/kuznya"
+VENV_DIR="$INSTALL_DIR/.venv"
 
 if [ ! -d "$INSTALL_DIR" ]; then
     echo "❌ КУЗНЯ не установлена. Запустите скрипт установки."
     exit 1
 fi
 
+if [ ! -d "$VENV_DIR" ]; then
+    echo "❌ Виртуальное окружение не найдено. Переустановите КУЗНЮ."
+    exit 1
+fi
+
+# Активация виртуального окружения и запуск
+source "$VENV_DIR/bin/activate"
 cd "$INSTALL_DIR/src"
 python3 main.py "$@"
+deactivate
 EOF
 
 chmod +x "$BIN_DIR/kuznya"
@@ -85,7 +105,7 @@ chmod +x "$BIN_DIR/kuznya"
 if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
     echo -e "${YELLOW}⚠️  Добавляю $BIN_DIR в PATH...${NC}"
 
-    # Определяем shell
+    # Определяем shell и добавляем PATH
     if [ -f "$HOME/.bashrc" ]; then
         echo "export PATH=\"$BIN_DIR:\$PATH\"" >> "$HOME/.bashrc"
     fi
@@ -103,13 +123,13 @@ fi
 echo -e "${GREEN}✓ Команда kuznya создана${NC}"
 
 # Создание .desktop файла
-echo -e "\n${YELLOW}[6/6] Создание .desktop файла...${NC}"
+echo -e "\n${YELLOW}[7/7] Создание .desktop файла...${NC}"
 cat > "$DESKTOP_DIR/kuznya.desktop" << EOF
 [Desktop Entry]
 Name=КУЗНЯ
 Name[ru]=КУЗНЯ
-Comment=Движок для создания MU*
-Comment[ru]=Движок для создания MU*
+Comment=Движок для создания текстовых RPG-мультиплееров
+Comment[ru]=Движок для создания текстовых RPG-мультиплееров
 Exec=$BIN_DIR/kuznya
 Terminal=true
 Type=Application
@@ -129,5 +149,6 @@ echo -e "\n${BLUE}Теперь вы можете:${NC}"
 echo -e "  • Запустить из терминала: ${YELLOW}kuznya${NC}"
 echo -e "  • Найти в меню приложений: ${YELLOW}КУЗНЯ${NC}"
 echo -e "\n${BLUE}Расположение:${NC} ${INSTALL_DIR}"
+echo -e "${BLUE}Виртуальное окружение:${NC} ${VENV_DIR}"
 echo -e "${BLUE}Для обновления выполните:${NC} bash <(curl -s https://raw.githubusercontent.com/DanielBash/kuznya/main/install.sh)"
 echo ""

@@ -16,7 +16,7 @@
 
 1) **Скачайте и запустите установочный скрипт**
 ```bash
-bash <(wget -qO- https://raw.githubusercontent.com/DanielBash/kuznya/main/install.sh)
+bash <(curl -s https://raw.githubusercontent.com/DanielBash/kuznya/main/install.sh)
 ```
 
 ### Установка вручную(linux)
