@@ -17,8 +17,9 @@ from easy_gui_prompt import EasyGUI
 # - локальные модули
 from keybindings import kb
 from widgets import TabContainer, Tab, ServerContainer, ScriptsContainer, ScriptInspectorContainer, \
-    ScriptCodeInspectorContainer, ObjectInspectorContainer
+    ScriptCodeInspectorContainer, ObjectInspectorContainer, ExportContainer
 from widgets.objects import ObjectsContainer
+from widgets.prefabs import PrefabsContainer
 
 
 # -- создание виджета приложения
@@ -40,7 +41,7 @@ class KuznyaApp:
                 MenuItem(
                     "Вкладки",
                     children=[
-                        MenuItem("Запуск", handler=self.do_launch_tab),
+                        MenuItem("Экспорт", handler=self.do_launch_tab),
                         MenuItem("Шаблоны", handler=self.do_prefabs_tab),
                         MenuItem("Скрипты", handler=self.do_scripts_tab),
                         MenuItem("Объекты", handler=self.do_objects_tab),
@@ -53,11 +54,13 @@ class KuznyaApp:
     # -- функции меню
     # - открытие вкладки мира
     def do_launch_tab(self):
-        pass
+        self.tab_container.tabs.append(Tab(ExportContainer(), title='Экспорт'))
+        self.focus_last_tab()
 
     # - открытие вкладки шаблонов
     def do_prefabs_tab(self):
-        pass
+        self.tab_container.tabs.append(Tab(PrefabsContainer(), title='Шаблоны'))
+        self.focus_last_tab()
 
     # - открытие вкладки скриптов
     def do_scripts_tab(self):
@@ -83,8 +86,11 @@ class KuznyaApp:
         self.focus_last_tab()
 
     # - открытие вкладки редактора объекта
-    def do_object_inspector_tab(self, object_identity):
-        self.tab_container.tabs.append(Tab(ObjectInspectorContainer(object_identity), title=f'Объект {object_identity[:5]}'))
+    def do_object_inspector_tab(self, object_identity, prefab=False):
+        if prefab:
+            self.tab_container.tabs.append(Tab(ObjectInspectorContainer(object_identity, prefab), title=f'Шаблон {object_identity[:5]}'))
+        else:
+            self.tab_container.tabs.append(Tab(ObjectInspectorContainer(object_identity, prefab), title=f'Объект {object_identity[:5]}'))
         self.focus_last_tab()
 
     # - открытие вкладки настроек

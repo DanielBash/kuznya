@@ -14,7 +14,7 @@ from prompt_toolkit.widgets import Box
 def message_container(text: str):
     return Box(Window(
         FormattedTextControl(text),
-        style="fg:#00ff00 bold",
+        style="class:tab-content",
         align=WindowAlign.CENTER,
         height=1,
     ))

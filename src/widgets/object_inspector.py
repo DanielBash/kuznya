@@ -22,9 +22,14 @@ import settings
 
 # -- вкладка дерева объектов
 class ObjectInspectorContainer:
-    def __init__(self, identity):
+    def __init__(self, identity, prefab=False):
         self.object = settings.app_state.world.do_get_object_by_identity(identity)
         self.identity = identity
+        self.prefab = prefab
+        if self.prefab:
+            self.object = settings.app_state.world.do_get_prefab_by_identity(identity)
+        else:
+            self.object = settings.app_state.world.do_get_object_by_identity(identity)
 
         self.script_area = TextArea(
             completer=WordCompleter([script.name for script in settings.app_state.world.scripts]),
@@ -132,7 +137,7 @@ class ObjectInspectorContainer:
                 self.attribute_area,
                 self.button_add_attribute,
             ]),
-            title='Объект')
+            title='Объект' if not self.prefab else 'Шаблон')
 
         self.container = FloatContainer(
             content=Box(self.frame, height=Dimension()),

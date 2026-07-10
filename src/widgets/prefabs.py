@@ -1,11 +1,11 @@
 """
 Объявление специфичных для приложения виджетов и контейнеров.
-Объявление вкладки просмотра дерева объектов.
+Объявление вкладки просмотра дерева шаблонов.
 """
 
 # -- импорт модулей
 # - глобальные
-from prompt_toolkit.layout import Window, ScrollablePane, FormattedTextControl, ScrollOffsets
+from prompt_toolkit.layout import Window, ScrollablePane, FormattedTextControl
 from prompt_toolkit.widgets import Frame, Box
 from prompt_toolkit.mouse_events import MouseEvent, MouseEventType
 from prompt_toolkit.formatted_text import FormattedText
@@ -13,12 +13,13 @@ from prompt_toolkit.key_binding import KeyBindings
 
 # - локальные
 import settings
+from world.loader import PrefabFile
 
 
-# -- вкладка дерева объектов
-class ObjectsContainer:
+# -- вкладка префабов
+class PrefabsContainer:
     def __init__(self):
-        self.root_object = settings.app_state.world.root_object
+        self.prefabs = settings.app_state.world.prefabs
         self._collapsed_ids = set()
         self.vertical_scroll = 0
         self.pane_height = 30
@@ -34,7 +35,7 @@ class ObjectsContainer:
         self.window = Window(content=self.control, wrap_lines=False, style='class:tab-content', )
         self.pane = ScrollablePane(self.window, keep_cursor_visible=False,
                                    keep_focused_window_visible=False, height=self.pane_height)
-        self.frame = Frame(self.pane, title="Объекты", )
+        self.frame = Frame(self.pane, title="Шаблоны", )
         self.container = Box(self.frame)
 
     def move_up(self, event):
@@ -45,17 +46,28 @@ class ObjectsContainer:
 
     def move_down(self, event):
         self.vertical_scroll += 1
-        maximum = max(0, self.render_object(self.root_object, None, 0, []) - self.pane_height)
+        maximum = max(0, self.get_total_lines() - self.pane_height)
         if self.vertical_scroll > maximum:
             self.vertical_scroll = maximum
-
         self.control.text = self.render()
+
+    def get_total_lines(self):
+        total = 0
+        for prefab in self.prefabs:
+            total += self.render_object(prefab, None, 0, [])
+        return total
 
     def render(self):
         self.pane.vertical_scroll = self.vertical_scroll
         fragments = []
-        if self.root_object:
-            self.render_object(self.root_object, None, 0, fragments)
+
+        fragments.append(
+            ('class:green-button', '[+ Новый шаблон]\n', self._make_add_prefab_handler())
+        )
+
+        for prefab in self.prefabs:
+            self.render_object(prefab, None, 0, fragments)
+
         return FormattedText(fragments)
 
     def render_object(self, object, parent_object, depth, fragments):
@@ -84,10 +96,9 @@ class ObjectsContainer:
             ('class:green-button', '[+]', self._make_add_child_handler(object))
         )
 
-        if parent_object is not None:
-            fragments.append(
-                ('class:red-button', '[-]', self._make_remove_handler(object, parent_object))
-            )
+        fragments.append(
+            ('class:red-button', '[-]', self._make_remove_handler(object, parent_object))
+        )
 
         fragments.append(('', '\n'))
 
@@ -112,7 +123,7 @@ class ObjectsContainer:
         def handler(mouse_event: MouseEvent):
             if mouse_event.event_type == MouseEventType.MOUSE_UP:
                 self.control.text = self.render()
-                settings.app_state.app.do_object_inspector_tab(object.identity)
+                settings.app_state.app.do_object_inspector_tab(object.identity, prefab=True)
         return handler
 
     def _make_add_child_handler(self, object):
@@ -123,11 +134,29 @@ class ObjectsContainer:
 
         return handler
 
+    def _make_add_prefab_handler(self):
+        def handler(mouse_event: MouseEvent):
+            if mouse_event.event_type == MouseEventType.MOUSE_UP:
+                try:
+                    new_prefab = PrefabFile()
+                    self.prefabs.append(new_prefab)
+                    self.control.text = self.render()
+                except NameError:
+                    pass
+        return handler
+
     def _make_remove_handler(self, object, parent_object):
         def handler(mouse_event: MouseEvent):
             if mouse_event.event_type == MouseEventType.MOUSE_UP:
                 node_id = object.identity
-                parent_object.delete_child(node_id)
+                if parent_object is not None:
+                    parent_object.delete_child(node_id)
+                else:
+                    prefabs_list = settings.app_state.world.prefabs
+                    for i, p in enumerate(prefabs_list):
+                        if p.identity == node_id:
+                            del prefabs_list[i]
+                            break
                 self.control.text = self.render()
 
         return handler

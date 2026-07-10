@@ -38,7 +38,7 @@ class ScriptsContainer:
 
                         Window(
                             FormattedTextControl(
-                                text=[('bg:#000000 fg:#ff0000', '[x]',
+                                text=[('class:tab-close', '[x]',
                                        lambda me, identity=script.identity: self.on_delete_script(me, identity))]
                             ), width=3)
 
@@ -57,16 +57,16 @@ class ScriptsContainer:
                     HSplit([
                         *self.buttons,
                         self.new_script_button,
-                    ], style='bg:#000000'),
+                    ], style='class:tab-content'),
                     height=10,
-                ), title='Скрипты', style='bg:#000000')
+                ), title='Скрипты', style='class:tab-content')
         else:
             self.frame = Frame(
                 HSplit([
                     Label('В данном мире еще нет скриптов', align=WindowAlign.CENTER),
                     self.new_script_button,
                 ]),
-                title='Скрипты', style='bg:#000000')
+                title='Скрипты', style='class:tab-content')
 
         self.container = Box(self.frame, height=Dimension())
 

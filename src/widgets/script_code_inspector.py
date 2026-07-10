@@ -30,9 +30,9 @@ class ScriptCodeInspectorContainer:
         self.container = HSplit([
             Window(
                 FormattedTextControl(
-                    [('bg:#000000 fg:#00ff00', 'Сохранить', self.on_save)]),
+                    [('class:green-button', 'Сохранить', self.on_save)]),
                 height=1,
-                style='bg:#000000',
+                style='class:tab-content',
             ),
             self.editor
         ])

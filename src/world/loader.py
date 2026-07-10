@@ -105,6 +105,7 @@ class WorldFile:
         self.port_ssh = None
         self.port_telnet = None
         self.port_web = None
+        self.connection_prefab_identity = None
 
         self.load_new()
 
@@ -112,10 +113,8 @@ class WorldFile:
     def load_filename(self, filename: Path):
         self.filename = filename
 
-        with gzip.open(filename, 'r', encoding='UTF-8') as file:
+        with gzip.open(filename, 'rt', encoding='UTF-8') as file:
             self._data = json.load(file)
-
-        self.load_new()
 
         self.root_object = ObjectFile().load(self._data['root'])
         self.prefabs = [PrefabFile().load(prefab) for prefab in self._data['prefabs']]
@@ -123,17 +122,20 @@ class WorldFile:
         self.port_ssh = self._data['server']['port_ssh']
         self.port_telnet = self._data['server']['port_telnet']
         self.port_web = self._data['server']['port_web']
+        self.filename = filename
+        self.connection_prefab_identity = self._data['connection_prefab_identity']
 
         return self
 
     def load_new(self):
-        self.filename = pathlib.Path(__file__).parent.absolute()
+        self.filename = pathlib.Path(__file__).parent.absolute() / 'world.wrld'
         self.root_object = ObjectFile()
         self.prefabs = []
         self.scripts = []
         self.port_ssh = 1337
         self.port_telnet = 1338
         self.port_web = 1339
+        self.connection_prefab_identity = ''
 
         return self
 
@@ -143,6 +145,7 @@ class WorldFile:
             'root': self.root_object.save(),
             'prefabs': [prefab.save() for prefab in self.prefabs],
             'scripts': [script.save() for script in self.scripts],
+            'connection_prefab_identity': self.connection_prefab_identity,
             'server': {
                 'port_ssh': self.port_ssh,
                 'port_telnet': self.port_telnet,
@@ -167,6 +170,13 @@ class WorldFile:
         for script in self.scripts:
             if script.identity == identity:
                 return script
+
+    def do_get_prefab_by_identity(self, identity):
+        for prefab in self.prefabs:
+            found = self.find_in_children(prefab, identity)
+            if found is not None:
+                return found
+        return None
 
     def do_get_object_by_identity(self, identity):
         return self.find_in_children(self.root_object, identity)
