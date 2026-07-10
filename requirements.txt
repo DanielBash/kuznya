@@ -1,2 +1,8 @@
+easy_gui_prompt==2024.5.28
+jedi==0.20.0
+parso==0.8.7
 prompt_toolkit==3.0.52
+Pygments==2.20.0
+PyYAML==6.0.3
+toml==0.10.2
 wcwidth==0.8.2
