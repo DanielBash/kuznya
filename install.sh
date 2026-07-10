@@ -58,21 +58,42 @@ echo -e "${GREEN}✓ Репозиторий клонирован${NC}"
 
 # Создание виртуального окружения
 echo -e "\n${YELLOW}[4/7] Создание виртуального окружения Python...${NC}"
-if [ ! -d "$VENV_DIR" ]; then
-    python3 -m venv "$VENV_DIR"
-    echo -e "${GREEN}✓ Виртуальное окружение создано${NC}"
-else
-    echo -e "${YELLOW}⚠️  Виртуальное окружение уже существует${NC}"
+if [ -d "$VENV_DIR" ]; then
+    echo -e "${YELLOW}⚠️  Виртуальное окружение уже существует, пересоздаю...${NC}"
+    rm -rf "$VENV_DIR"
 fi
+
+cd "$INSTALL_DIR"
+python3 -m venv "$VENV_DIR"
+echo -e "${GREEN}✓ Виртуальное окружение создано${NC}"
 
 # Активация venv и установка зависимостей
 echo -e "\n${YELLOW}[5/7] Установка Python-зависимостей в venv...${NC}"
 source "$VENV_DIR/bin/activate"
-pip install --upgrade pip > /dev/null 2>&1
-cd "$INSTALL_DIR"
-pip install -r requirements.txt
+
+# Проверяем, что мы в venv
+if [[ "$VIRTUAL_ENV" != "" ]]; then
+    echo -e "${GREEN}✓ Виртуальное окружение активировано: $VIRTUAL_ENV${NC}"
+
+    # Обновляем pip внутри venv
+    python3 -m pip install --upgrade pip --quiet
+
+    # Устанавливаем зависимости
+    if [ -f "$INSTALL_DIR/requirements.txt" ]; then
+        python3 -m pip install -r "$INSTALL_DIR/requirements.txt"
+        echo -e "${GREEN}✓ Зависимости установлены${NC}"
+    else
+        echo -e "${RED}❌ Файл requirements.txt не найден${NC}"
+        deactivate
+        exit 1
+    fi
+else
+    echo -e "${RED}❌ Не удалось активировать виртуальное окружение${NC}"
+    exit 1
+fi
+
 deactivate
-echo -e "${GREEN}✓ Зависимости установлены в виртуальное окружение${NC}"
+echo -e "${GREEN}✓ Установка в venv завершена${NC}"
 
 # Создание исполняемого скрипта в PATH
 echo -e "\n${YELLOW}[6/7] Создание команды kuznya...${NC}"
@@ -96,7 +117,6 @@ fi
 source "$VENV_DIR/bin/activate"
 cd "$INSTALL_DIR/src"
 python3 main.py "$@"
-deactivate
 EOF
 
 chmod +x "$BIN_DIR/kuznya"
