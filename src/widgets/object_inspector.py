@@ -89,11 +89,11 @@ class ObjectInspectorContainer:
                         ),
                         Window(
                             FormattedTextControl(
-                                text=[('bg:#000000 fg:#ff0000', '[x]',
+                                text=[('class:red-button', '[x]',
                                        lambda me, identity=script.identity: self.on_remove_script(me, identity))]
                             ), width=3
                         )
-                    ], style="bg:#000000")
+                    ], style="class:tab-content")
                 )
         else:
             scripts_ui.append(Label('Нет прикрепленных скриптов', align=WindowAlign.CENTER))
@@ -111,11 +111,11 @@ class ObjectInspectorContainer:
                         ),
                         Window(
                             FormattedTextControl(
-                                text=[('bg:#000000 fg:#ff0000', '[x]',
+                                text=[('class:red-button', '[x]',
                                        lambda me, n=name: self.on_remove_attribute(me, n))]
                             ), width=3
                         )
-                    ], style="bg:#000000")
+                    ], style="class:tab-content")
                 )
         else:
             attributes_ui.append(Label('Нет атрибутов', align=WindowAlign.CENTER))
