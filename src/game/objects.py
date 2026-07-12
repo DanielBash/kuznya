@@ -2,17 +2,16 @@
 Объявление всех объектов
 """
 
-# -- импорт библиотек
-import pathlib
-import random
-from pathlib import Path
 import gzip
 import json
+# -- импорт библиотек
+import pathlib
 import secrets
+from pathlib import Path
 
 
 # -- объявление классов
-class ObjectFile:
+class Object:
     def __init__(self, identity=None, scripts=None, children=None):
         if identity is None:
             identity = secrets.token_urlsafe(16)
@@ -29,7 +28,7 @@ class ObjectFile:
     def save(self):
         return {
             'identity': self.identity,
-            'scripts': [script.save() for script in self.scripts],
+            'scripts': [script for script in self.scripts],
             'children': [child.save() for child in self.children],
             'attributes': self.attributes
         }
@@ -37,13 +36,12 @@ class ObjectFile:
     def load(self, saved):
         self.identity = saved['identity']
         self.scripts = saved['scripts']
-        self.children = [ObjectFile().load(child) for child in saved['children']]
+        self.children = [Object().load(child) for child in saved['children']]
         self.attributes = saved['attributes']
         return self
 
-    # - быстрые макросы
     def add_child(self):
-        self.children.append(ObjectFile())
+        self.children.append(Object())
 
     def delete_child(self, identity):
         for child_indx in range(len(self.children)):
@@ -61,12 +59,12 @@ class ObjectFile:
             return self.identity
 
 
-class PrefabFile(ObjectFile):
+class Prefab(Object):
     def __init__(self):
         super().__init__()
 
 
-class ScriptFile:
+class Script:
     def __init__(self, code=None, name=None, identity=None):
         if identity is None:
             identity = secrets.token_urlsafe(16)
@@ -93,8 +91,11 @@ class ScriptFile:
 
         return self
 
+    def compile(self):
+        pass
 
-class WorldFile:
+
+class World:
     def __init__(self):
         self._data = {}
 
@@ -116,9 +117,9 @@ class WorldFile:
         with gzip.open(filename, 'rt', encoding='UTF-8') as file:
             self._data = json.load(file)
 
-        self.root_object = ObjectFile().load(self._data['root'])
-        self.prefabs = [PrefabFile().load(prefab) for prefab in self._data['prefabs']]
-        self.scripts = [ScriptFile().load(script) for script in self._data['scripts']]
+        self.root_object = Object().load(self._data['root'])
+        self.prefabs = [Prefab().load(prefab) for prefab in self._data['prefabs']]
+        self.scripts = [Script().load(script) for script in self._data['scripts']]
         self.port_ssh = self._data['server']['port_ssh']
         self.port_telnet = self._data['server']['port_telnet']
         self.port_web = self._data['server']['port_web']
@@ -129,7 +130,7 @@ class WorldFile:
 
     def load_new(self):
         self.filename = pathlib.Path(__file__).parent.absolute() / 'world.wrld'
-        self.root_object = ObjectFile()
+        self.root_object = Object()
         self.prefabs = []
         self.scripts = []
         self.port_ssh = 1337
@@ -158,7 +159,7 @@ class WorldFile:
 
     # - быстрые макросы
     def do_new_script(self):
-        self.scripts.append(ScriptFile())
+        self.scripts.append(Script())
 
     def do_delete_script(self, identity):
         for script_indx in range(len(self.scripts)):
@@ -198,3 +199,6 @@ class WorldFile:
 
     def get_objects(self):
         return self.get_objects_from_root(self.root_object)
+
+    def run(self):
+        pass

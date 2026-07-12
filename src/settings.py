@@ -27,7 +27,7 @@ STYLE = Style([
     ('frame.border', 'bg:#232A2E fg:#4A5A4E bold'),
     ('frame.label', 'bg:#232A2E fg:#A7C080 bold'),
     ('text-area', 'fg:#D3C6AA bg:#232A2E'),
-    ('button', 'fg:#A7C080 bg:#2B3339'),
+    ('button', 'fg:#A7C080 bg:#232A2E'),
     ('label', 'fg:#D3C6AA bg:#232A2E'),
     ('dialog', 'bg:#232A2E'),
     ('dialog frame.label', 'fg:#A7C080 bg:#232A2E bold'),
@@ -35,12 +35,8 @@ STYLE = Style([
     ('dialog input', 'fg:#D3C6AA bg:#2B3339'),
     ('dialog input cursor', 'bg:#A7C080 fg:#232A2E'),
     ('button.focused', 'fg:#A7C080 bg:#343F44 bold'),
-    ('green-button', 'fg:#1C2124 bg:#A7C080 bold'),
-    ('green-button hover', 'fg:#1C2124 bg:#8DB36E bold'),
-    ('green-button pressed', 'fg:#1C2124 bg:#739952 bold'),
-    ('red-button', 'fg:#D3C6AA bg:#E67E80 bold'),
-    ('red-button hover', 'fg:#D3C6AA bg:#D96B6D bold'),
-    ('red-button pressed', 'fg:#D3C6AA bg:#CC585A bold'),
+    ('green-button', 'fg:#A7C080 bg:#232A2E bold'),
+    ('red-button', 'fg:#E67E80 bg:#232A2E bold'),
 ])
 MOUSE_SUPPORT = True
 FULLSCREEN = True
