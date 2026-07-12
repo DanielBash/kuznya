@@ -106,12 +106,9 @@ class ExportContainer:
 
     def confirm_filename(self):
         if self.filename_dialog_purpose == 'save':
-            try:
-                settings.app_state.world.save_filename(Path(self.filename_buffer.text))
-                settings.app_state.world.filename = Path(self.filename_buffer.text)
-                self.show_filename_dialog = False
-            except Exception as e:
-                self.show_filename_dialog = False
+            settings.app_state.world.save_filename(Path(self.filename_buffer.text))
+            settings.app_state.world.filename = Path(self.filename_buffer.text)
+            self.show_filename_dialog = False
         elif self.filename_dialog_purpose == 'load':
             try:
                 settings.app_state.world.load_filename(Path(self.filename_buffer.text))

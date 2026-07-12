@@ -30,15 +30,15 @@ class ObjectFile:
     def save(self):
         return {
             'identity': self.identity,
-            'scripts': [script.save() for script in self.scripts],
+            'scripts': [script.identity for script in self.scripts],
             'children': [child.save() for child in self.children],
             'attributes': self.attributes
         }
 
-    def load(self, saved):
+    def load(self, saved, world):
         self.identity = saved['identity']
-        self.scripts = saved['scripts']
-        self.children = [ObjectFile().load(child) for child in saved['children']]
+        self.scripts = [world.do_get_script_by_identity(i) for i in saved['scripts']]
+        self.children = [ObjectFile().load(child, world) for child in saved['children']]
         self.attributes = saved['attributes']
         return self
 
@@ -63,8 +63,7 @@ class ObjectFile:
 
 
 class PrefabFile(ObjectFile):
-    def __init__(self):
-        super().__init__()
+    pass
 
 
 class ScriptFile:
@@ -113,14 +112,14 @@ class WorldFile:
 
     # - функции загрузки
     def load_filename(self, filename: Path):
-        self.filename = filename
+        self.filename = filename.resolve()
 
         with gzip.open(filename, 'rt', encoding='UTF-8') as file:
             self._data = json.load(file)
 
-        self.root_object = ObjectFile().load(self._data['root'])
-        self.prefabs = [PrefabFile().load(prefab) for prefab in self._data['prefabs']]
         self.scripts = [ScriptFile().load(script) for script in self._data['scripts']]
+        self.root_object = ObjectFile().load(self._data['root'], self)
+        self.prefabs = [PrefabFile().load(prefab, self) for prefab in self._data['prefabs']]
         self.port_ssh = self._data['server']['port_ssh']
         self.port_telnet = self._data['server']['port_telnet']
         self.port_web = self._data['server']['port_web']
