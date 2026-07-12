@@ -6,6 +6,7 @@ from pathlib import Path
 # -- импорт модулей
 # - глобальные модули
 from prompt_toolkit.application import Application, get_app
+from prompt_toolkit.clipboard.pyperclip import PyperclipClipboard
 from prompt_toolkit.layout import Layout
 from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.widgets import MenuContainer, MenuItem, TextArea
@@ -117,4 +118,5 @@ app = Application(
     mouse_support=MOUSE_SUPPORT,
     key_bindings=kb,
     style=STYLE,
+    clipboard=PyperclipClipboard(),
 )

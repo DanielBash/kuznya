@@ -22,7 +22,7 @@ class WebClientCodeContainer:
                                lexer=PygmentsLexer(HtmlLexer),
                                multiline=True,
                                focusable=True,
-                               line_numbers=True
+                               line_numbers=True,
                                )
         self.container = HSplit([
             Window(

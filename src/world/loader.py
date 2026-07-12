@@ -2,13 +2,12 @@
 Объявление всех объектов
 """
 
-import gzip
-import json
 # -- импорт библиотек
 import pathlib
 import secrets
 from pathlib import Path
-
+import gzip
+import json
 import settings
 
 
@@ -102,8 +101,7 @@ class WorldFile:
         self.root_object = None
         self.prefabs = None
         self.scripts = None
-        self.port_ssh = None
-        self.port_telnet = None
+        self.port_wss = None
         self.port_web = None
         self.connection_prefab_identity = None
         self.web_client_code = ''
@@ -120,8 +118,8 @@ class WorldFile:
         self.scripts = [ScriptFile().load(script) for script in self._data['scripts']]
         self.root_object = ObjectFile().load(self._data['root'], self)
         self.prefabs = [PrefabFile().load(prefab, self) for prefab in self._data['prefabs']]
-        self.port_ssh = self._data['server']['port_ssh']
-        self.port_telnet = self._data['server']['port_telnet']
+        self.port_wss = self._data['server']['port_wss']
+        self.port_wss = self._data['server']['port_wss']
         self.port_web = self._data['server']['port_web']
         self.filename = filename
         self.connection_prefab_identity = self._data['connection_prefab_identity']
@@ -134,8 +132,7 @@ class WorldFile:
         self.root_object = ObjectFile()
         self.prefabs = []
         self.scripts = []
-        self.port_ssh = 1337
-        self.port_telnet = 1338
+        self.port_wss = 1337
         self.port_web = 1339
         self.connection_prefab_identity = ''
         self.web_client_code = settings.DEFAULT_CLIENT
@@ -150,8 +147,7 @@ class WorldFile:
             'scripts': [script.save() for script in self.scripts],
             'connection_prefab_identity': self.connection_prefab_identity,
             'server': {
-                'port_ssh': self.port_ssh,
-                'port_telnet': self.port_telnet,
+                'port_wss': self.port_wss,
                 'port_web': self.port_web,
                 'web_client_code': self.web_client_code
             },

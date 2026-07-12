@@ -64,7 +64,7 @@ DEFAULT_CLIENT = """<!DOCTYPE html>
     <button onclick="sendMessage()">Отправить</button>
 
     <script>
-        const ws = new WebSocket('ws://localhost:8765');
+        const ws = new WebSocket('ws://localhost:1337');
         const log = document.getElementById('log');
         const input = document.getElementById('message');
 

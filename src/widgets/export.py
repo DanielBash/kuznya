@@ -4,13 +4,11 @@
 """
 from pathlib import Path
 
-from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.completion import PathCompleter
 from prompt_toolkit.filters import Condition
 # -- импортирование модулей
 # - глобальные
-from prompt_toolkit.layout import HSplit, Dimension, WindowAlign, ConditionalContainer, BufferControl, Window, \
-    FloatContainer, Float, CompletionsMenu
+from prompt_toolkit.layout import HSplit, Dimension, ConditionalContainer, FloatContainer, Float, CompletionsMenu
 from prompt_toolkit.widgets import Frame, TextArea, Box, Button, Label
 
 # - локальные

@@ -16,14 +16,8 @@ import settings
 # - настройки
 class ServerContainer:
     def __init__(self):
-        self.telnet_area = TextArea(
-            text=str(settings.app_state.world.port_telnet),
-            multiline=False,
-            focusable=True,
-            focus_on_click=True,
-        )
-        self.ssh_area = TextArea(
-            text=str(settings.app_state.world.port_ssh),
+        self.wss_area = TextArea(
+            text=str(settings.app_state.world.port_wss),
             multiline=False,
             focusable=True,
             focus_on_click=True,
@@ -54,8 +48,7 @@ class ServerContainer:
         self.frame = Frame(
             HSplit([
                 Label(text='Настройки сервера', align=WindowAlign.CENTER),
-                Frame(body=self.telnet_area, title="Порт telnet", height=3),
-                Frame(body=self.ssh_area, title="Порт ssh", height=3),
+                Frame(body=self.wss_area, title="Порт wss", height=3),
                 Frame(body=self.web_area, title="Порт web", height=3),
                 Frame(body=self.connection_prefab_area, title="Шаблон игрока", height=3),
                 self.web_client_code_button,
@@ -80,17 +73,14 @@ class ServerContainer:
         self.frame.title = 'Сервер'
 
         try:
-            telnet_port = int(self.telnet_area.text)
-            ssh_port = int(self.ssh_area.text)
+            ssh_port = int(self.wss_area.text)
             web_port = int(self.web_area.text)
             connection_prefab_identity = str(self.connection_prefab_area.text)
 
-            if 0 > telnet_port or telnet_port > 65535: raise Exception
             if 0 > ssh_port or ssh_port > 65535: raise Exception
             if 0 > web_port or web_port > 65535: raise Exception
 
-            settings.app_state.world.port_telnet = telnet_port
-            settings.app_state.world.port_ssh = ssh_port
+            settings.app_state.world.port_wss = ssh_port
             settings.app_state.world.port_web = web_port
             settings.app_state.world.connection_prefab_identity = connection_prefab_identity
 
@@ -100,8 +90,7 @@ class ServerContainer:
             self.frame.title = 'Сервер (Ошибка)'
 
     def on_update(self):
-        self.telnet_area.text = str(settings.app_state.world.port_telnet)
-        self.ssh_area.text = str(settings.app_state.world.port_ssh)
+        self.wss_area.text = str(settings.app_state.world.port_wss)
         self.web_area.text = str(settings.app_state.world.port_web)
         self.connection_prefab_area.text = str(settings.app_state.world.connection_prefab_identity)
 
