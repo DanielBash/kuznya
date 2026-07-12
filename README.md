@@ -12,14 +12,14 @@
 
 ## Запуск проекта(linux)
 
-### Запуск через скрипт-установщик(linux)
+### Запуск через скрипт-установщик(debain)
 
 1) **Скачайте и запустите установочный скрипт**
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/DanielBash/kuznya/main/install.sh)
 ```
 
-### Установка вручную(linux)
+### Установка вручную(debain)
 1) **Скачайте официальный репозиторий и перейдите в него**
 ```bash
 git clone https://github.com/DanielBash/kuznya.git
