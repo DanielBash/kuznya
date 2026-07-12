@@ -17,7 +17,7 @@ from easy_gui_prompt import EasyGUI
 # - локальные модули
 from keybindings import kb
 from widgets import TabContainer, Tab, ServerContainer, ScriptsContainer, ScriptInspectorContainer, \
-    ScriptCodeInspectorContainer, ObjectInspectorContainer, ExportContainer
+    ScriptCodeInspectorContainer, ObjectInspectorContainer, ExportContainer, WebClientCodeContainer
 from widgets.objects import ObjectsContainer
 from widgets.prefabs import PrefabsContainer
 
@@ -91,6 +91,10 @@ class KuznyaApp:
             self.tab_container.tabs.append(Tab(ObjectInspectorContainer(object_identity, prefab), title=f'Шаблон {object_identity[:5]}'))
         else:
             self.tab_container.tabs.append(Tab(ObjectInspectorContainer(object_identity, prefab), title=f'Объект {object_identity[:5]}'))
+        self.focus_last_tab()
+
+    def on_web_client_code(self):
+        self.tab_container.tabs.append(Tab(WebClientCodeContainer(), title='Веб-клиент'))
         self.focus_last_tab()
 
     # - открытие вкладки настроек

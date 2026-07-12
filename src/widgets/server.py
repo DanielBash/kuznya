@@ -41,6 +41,11 @@ class ServerContainer:
             focus_on_click=True,
             completer=WordCompleter([prefab.identity for prefab in settings.app_state.world.prefabs]),
         )
+        self.web_client_code_button = Button(
+            text='Редактировать веб-клиент',
+            width=30,
+            handler=self.on_web_client_code
+        )
         self.submit_button = Button(
             text='Подтвердить',
             width=30,
@@ -53,6 +58,7 @@ class ServerContainer:
                 Frame(body=self.ssh_area, title="Порт ssh", height=3),
                 Frame(body=self.web_area, title="Порт web", height=3),
                 Frame(body=self.connection_prefab_area, title="Шаблон игрока", height=3),
+                self.web_client_code_button,
                 self.submit_button,
             ]),
             title='Сервер')
@@ -98,3 +104,6 @@ class ServerContainer:
         self.ssh_area.text = str(settings.app_state.world.port_ssh)
         self.web_area.text = str(settings.app_state.world.port_web)
         self.connection_prefab_area.text = str(settings.app_state.world.connection_prefab_identity)
+
+    def on_web_client_code(self):
+        settings.app_state.app.on_web_client_code()

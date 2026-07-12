@@ -40,7 +40,62 @@ STYLE = Style([
 ])
 MOUSE_SUPPORT = True
 FULLSCREEN = True
+DEFAULT_CLIENT = """<!DOCTYPE html>
+<html>
+<head>
+    <title>Веб-Клиент</title>
+    <style>
+        body { font-family: monospace; margin: 20px; }
+        #log { 
+            border: 1px solid #ccc; 
+            padding: 10px; 
+            height: 300px; 
+            overflow-y: scroll;
+            background: #f9f9f9;
+        }
+        input { width: 80%; padding: 5px; }
+        button { padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Веб-Клиент</h1>
+    <div id="log"></div>
+    <input id="message" type="text" placeholder="Введите команду...">
+    <button onclick="sendMessage()">Отправить</button>
 
+    <script>
+        const ws = new WebSocket('ws://localhost:8765');
+        const log = document.getElementById('log');
+        const input = document.getElementById('message');
+
+        ws.onmessage = (event) => {
+            log.innerHTML += `<div>> ${event.data}</div>`;
+            log.scrollTop = log.scrollHeight;
+        };
+
+        ws.onopen = () => {
+            log.innerHTML += '<div style="color: green">Подключение успешно.</div>';
+        };
+
+        ws.onclose = () => {
+            log.innerHTML += '<div style="color: red">Отключено</div>';
+        };
+
+        function sendMessage() {
+            if (input.value) {
+                ws.send(input.value);
+                log.innerHTML += `<div style="color: blue">< ${input.value}</div>`;
+                input.value = '';
+            }
+        }
+
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
+"""
 
 # -- состояние приложения
 class AppState:

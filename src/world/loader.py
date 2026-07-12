@@ -2,13 +2,14 @@
 Объявление всех объектов
 """
 
-# -- импорт библиотек
-import pathlib
-import random
-from pathlib import Path
 import gzip
 import json
+# -- импорт библиотек
+import pathlib
 import secrets
+from pathlib import Path
+
+import settings
 
 
 # -- объявление классов
@@ -106,6 +107,7 @@ class WorldFile:
         self.port_telnet = None
         self.port_web = None
         self.connection_prefab_identity = None
+        self.web_client_code = ''
 
         self.load_new()
 
@@ -124,6 +126,7 @@ class WorldFile:
         self.port_web = self._data['server']['port_web']
         self.filename = filename
         self.connection_prefab_identity = self._data['connection_prefab_identity']
+        self.web_client_code = self._data['server']['web_client_code']
 
         return self
 
@@ -136,6 +139,7 @@ class WorldFile:
         self.port_telnet = 1338
         self.port_web = 1339
         self.connection_prefab_identity = ''
+        self.web_client_code = settings.DEFAULT_CLIENT
 
         return self
 
@@ -149,7 +153,8 @@ class WorldFile:
             'server': {
                 'port_ssh': self.port_ssh,
                 'port_telnet': self.port_telnet,
-                'port_web': self.port_web
+                'port_web': self.port_web,
+                'web_client_code': self.web_client_code
             },
         }
 
