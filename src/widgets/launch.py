@@ -2,6 +2,8 @@
 Объявление специфичных для приложения виджетов и контейнеров.
 Объявление окна настроек.
 """
+import os
+import signal
 import subprocess
 import sys
 import threading
@@ -71,7 +73,8 @@ class LaunchContainer:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
-                bufsize=1
+                bufsize=1,
+                start_new_session=True,
             )
             settings.app_state.app.world_process = process
             stdout_thread = threading.Thread(target=self.update_logs, args=(process.stdout, "OUT"))
@@ -81,9 +84,20 @@ class LaunchContainer:
             self.stdout_thread = stdout_thread
             self.stdout_thread.start()
         else:
-            settings.app_state.app.world_process.terminate()
+            proc = settings.app_state.app.world_process
+            try:
+                os.killpg(os.getpgid(proc.pid), signal.SIGINT)
+            except ProcessLookupError:
+                pass
+            try:
+                proc.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                proc.wait()
+
             if self.stdout_thread:
                 self.stdout_thread.join(timeout=5)
+
             settings.app_state.world.load_filename(settings.app_state.world.filename)
 
         self.on_update()
