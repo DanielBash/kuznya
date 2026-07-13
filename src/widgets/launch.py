@@ -51,7 +51,12 @@ class LaunchContainer:
         return self.container
 
     def on_launch(self):
-        pass
+        settings.app_state.app.launched = not settings.app_state.app.launched
+        if settings.app_state.app.launched:
+            settings.app_state.world.save_filename(settings.app_state.world.filename)
+        else:
+            pass
+        self.on_update()
 
     def on_update(self):
         if settings.app_state.app.launched:
