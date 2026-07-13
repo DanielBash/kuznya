@@ -19,6 +19,7 @@ from easy_gui_prompt import EasyGUI
 from keybindings import kb
 from widgets import TabContainer, Tab, ServerContainer, ScriptsContainer, ScriptInspectorContainer, \
     ScriptCodeInspectorContainer, ObjectInspectorContainer, ExportContainer, WebClientCodeContainer
+from widgets.launch import LaunchContainer
 from widgets.objects import ObjectsContainer
 from widgets.prefabs import PrefabsContainer
 
@@ -32,6 +33,7 @@ class KuznyaApp:
         self.construct()
 
         app_state.app = self
+        self.launched = False
 
     def construct(self):
         self.tab_container = TabContainer(tabs=[])
@@ -42,7 +44,8 @@ class KuznyaApp:
                 MenuItem(
                     "Вкладки",
                     children=[
-                        MenuItem("Экспорт", handler=self.do_launch_tab),
+                        MenuItem("Запуск", handler=self.do_launch_tab),
+                        MenuItem("Экспорт", handler=self.do_export_tab),
                         MenuItem("Шаблоны", handler=self.do_prefabs_tab),
                         MenuItem("Скрипты", handler=self.do_scripts_tab),
                         MenuItem("Объекты", handler=self.do_objects_tab),
@@ -54,8 +57,12 @@ class KuznyaApp:
 
     # -- функции меню
     # - открытие вкладки мира
-    def do_launch_tab(self):
+    def do_export_tab(self):
         self.tab_container.tabs.append(Tab(ExportContainer(), title='Экспорт'))
+        self.focus_last_tab()
+
+    def do_launch_tab(self):
+        self.tab_container.tabs.append(Tab(LaunchContainer(), title='Запуск'))
         self.focus_last_tab()
 
     # - открытие вкладки шаблонов
