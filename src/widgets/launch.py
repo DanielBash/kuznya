@@ -2,12 +2,15 @@
 Объявление специфичных для приложения виджетов и контейнеров.
 Объявление окна настроек.
 """
+import subprocess
+import sys
+import threading
+from pathlib import Path
 
 # -- импортирование модулей
 # - глобальные
 from prompt_toolkit.layout import HSplit, Dimension, WindowAlign, FloatContainer, Float, CompletionsMenu
 from prompt_toolkit.widgets import Frame, TextArea, Box, Button, Label
-from prompt_toolkit.completion import WordCompleter
 
 # - локальные
 import settings
@@ -24,7 +27,7 @@ class LaunchContainer:
         )
         self.launch_button = Button(
             text='Сохранить и запустить/Остановить сервер',
-            width=30,
+            width=50,
             handler=self.on_launch,
         )
         self.frame = Frame(
@@ -44,22 +47,49 @@ class LaunchContainer:
                 )
             ]
         )
+        self.stdout_thread = None
 
         self.on_update()
 
     def __pt_container__(self):
         return self.container
 
+    def update_logs(self, pipe, prefix):
+        for line in iter(pipe.readline, ''):
+            self.logs_area.text = self.logs_area.text + line
+
     def on_launch(self):
         settings.app_state.app.launched = not settings.app_state.app.launched
         if settings.app_state.app.launched:
             settings.app_state.world.save_filename(settings.app_state.world.filename)
+            process = subprocess.Popen(
+                [
+                    sys.executable, '-u',
+                    str(Path(__file__).parent.parent.parent / 'interpreter/src/main.py'),
+                    str(settings.app_state.world.filename.resolve())
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1
+            )
+            settings.app_state.app.world_process = process
+            stdout_thread = threading.Thread(target=self.update_logs, args=(process.stdout, "OUT"))
+            stdout_thread.daemon = True
+            self.logs_area.text = ''
+
+            self.stdout_thread = stdout_thread
+            self.stdout_thread.start()
         else:
-            pass
+            settings.app_state.app.world_process.terminate()
+            if self.stdout_thread:
+                self.stdout_thread.join(timeout=5)
+            settings.app_state.world.load_filename(settings.app_state.world.filename)
+
         self.on_update()
 
     def on_update(self):
         if settings.app_state.app.launched:
-            self.launch_button.text = 'Остановить сервер'
+            self.launch_button.text = 'Остановить мир и подгрузить изменения'
         else:
-            self.launch_button.text = 'Сохранить и запустить сервер'
+            self.launch_button.text = 'Сохранить и запустить мир'
