@@ -7,6 +7,7 @@ import gzip
 import json
 # -- импорт библиотек
 import pathlib
+import re
 import secrets
 import time
 from pathlib import Path
@@ -71,8 +72,10 @@ class Object:
         self.children.append(Object(world=self.world, parent=self))
 
     def transfer_user_connection_to(self, object):
+        self.trigger('on_disconnect')
         object.connection = self.connection
         self.connection = None
+        object.trigger('on_connect')
 
     def schedule(self, func, delay, *args, owner=None, **kwargs):
         task = [delay, func, args, kwargs, owner or self]
@@ -110,9 +113,29 @@ class Object:
         else:
             return self.identity
 
+    def safe(self, string):
+        return string.replace('<', '&lt;').replace('>', '&gt;')
+
+    def _convert_tags(self, message):
+        def replace_tag(match):
+            tag_content = match.group(1)
+
+            if not tag_content or tag_content.startswith('/'):
+                return '</color>'
+
+            return f'<color color={tag_content}>'
+
+        result = re.sub(r'<([^>]*)>', replace_tag, message)
+
+        return result
+
     def send(self, message):
         if not self.alive:
             return
+
+
+        message = self._convert_tags(message)
+
         if self.connection:
             try:
                 self.connection.send(message)
