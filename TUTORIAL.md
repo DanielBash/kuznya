@@ -1,5 +1,3 @@
-from interpreter.src.utils.game import Worldfrom interpreter.src.utils.game import World
-
 # Краткое руководство в примерах
 
 
