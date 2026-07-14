@@ -12,7 +12,6 @@ from prompt_toolkit.selection import SelectionType
 kb = KeyBindings()
 
 # -- объявление функций
-@kb.add("c-c", eager=True)
 @kb.add("c-q", eager=True)
 def do_quit_app(event):
     event.app.exit()
