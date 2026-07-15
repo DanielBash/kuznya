@@ -12,7 +12,7 @@ from pathlib import Path
 # -- импортирование модулей
 # - глобальные
 from prompt_toolkit.layout import HSplit, Dimension, WindowAlign, FloatContainer, Float, CompletionsMenu
-from prompt_toolkit.widgets import Frame, TextArea, Box, Button, Label
+from prompt_toolkit.widgets import Frame, TextArea, Box, Button, Label, Checkbox
 
 # - локальные
 import settings
@@ -32,10 +32,14 @@ class LaunchContainer:
             width=50,
             handler=self.on_launch,
         )
+        self.checkbox = Checkbox(
+            text='Подгружать изменения',
+        )
         self.frame = Frame(
             HSplit([
                 Label(text='Управление сервером', align=WindowAlign.CENTER),
                 Frame(body=self.logs_area, title="Логи", height=10),
+                self.checkbox,
                 self.launch_button,
             ]),
             title='Запуск сервера')
@@ -85,20 +89,22 @@ class LaunchContainer:
             self.stdout_thread.start()
         else:
             proc = settings.app_state.app.world_process
-            try:
-                os.killpg(os.getpgid(proc.pid), signal.SIGINT)
-            except ProcessLookupError:
-                pass
-            try:
-                proc.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
-                proc.wait()
+            if self.checkbox.checked:
+                try:
+                    os.killpg(os.getpgid(proc.pid), signal.SIGINT)
+                except ProcessLookupError:
+                    pass
+                try:
+                    proc.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+                    proc.wait()
+                settings.app_state.world.load_filename(settings.app_state.world.filename)
+            else:
+                proc.kill()
 
             if self.stdout_thread:
                 self.stdout_thread.join(timeout=5)
-
-            settings.app_state.world.load_filename(settings.app_state.world.filename)
 
         self.on_update()
 
