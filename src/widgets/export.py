@@ -2,6 +2,7 @@
 Объявление специфичных для приложения виджетов и контейнеров.
 Объявление окна настроек.
 """
+from datetime import datetime
 from pathlib import Path
 
 from prompt_toolkit.completion import PathCompleter
@@ -28,6 +29,11 @@ class ExportContainer:
             text='Сохранить как',
             width=30,
             handler=self.on_save_as
+        )
+        self.save_as_button = Button(
+            text='Быстрый бекап',
+            width=30,
+            handler=self.on_backup
         )
         self.load_button = Button(
             text='Загрузить',
@@ -123,3 +129,6 @@ class ExportContainer:
     def on_load_new(self):
         settings.app_state.world.load_new()
         self.filename_buffer.text = str(settings.app_state.world.filename)
+
+    def on_backup(self):
+        settings.app_state.world.save_filename(settings.app_state.world.filename.parent / f"worldbackup{datetime.now().strftime('%Y%m%d%H%M%S')}.world")

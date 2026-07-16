@@ -128,7 +128,7 @@ class WorldFile:
         return self
 
     def load_new(self):
-        self.filename = pathlib.Path(__file__).parent.absolute() / 'world.wrld'
+        self.filename = pathlib.Path(__file__).parent.absolute() / 'world.world'
         self.root_object = ObjectFile()
         self.prefabs = []
         self.scripts = []
