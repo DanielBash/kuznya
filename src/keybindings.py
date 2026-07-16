@@ -1,7 +1,7 @@
 """
 Объявление всех сочетаний клавиш
 """
-
+from prompt_toolkit.application import get_app
 # -- импорт модулей
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.bindings.focus import focus_next, focus_previous
@@ -28,9 +28,8 @@ def _(event):
 def _(event):
     buffer = event.app.current_buffer
     if buffer.selection_state:
-        buffer.copy_selection()
-    else:
-        event.app.exit(exception=KeyboardInterrupt)
+        data = buffer.copy_selection()          # Get the selected text
+        get_app().clipboard.set_data(data)
 
 @kb.add('c-v')
 def _(event):
