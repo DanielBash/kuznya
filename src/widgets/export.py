@@ -30,7 +30,7 @@ class ExportContainer:
             width=30,
             handler=self.on_save_as
         )
-        self.save_as_button = Button(
+        self.backup_button = Button(
             text='Быстрый бекап',
             width=30,
             handler=self.on_backup
@@ -49,6 +49,7 @@ class ExportContainer:
             HSplit([
                 self.save_button,
                 self.save_as_button,
+                self.backup_button,
                 self.load_button,
                 self.load_new_button
             ]),
