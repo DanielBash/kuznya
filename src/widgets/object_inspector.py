@@ -177,7 +177,7 @@ class ObjectInspectorContainer:
             return
 
         raw_value = self.attribute_area.text
-        expected_types = [list, dict, int, str, type(None), bool]
+        expected_types = [list, dict, int, str, type(None), bool, float]
 
         try:
             eval_value = eval(raw_value, {"__builtins__": __builtins__}, {})
